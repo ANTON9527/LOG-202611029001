@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>大学工作日志·GitHub 一步步上手（数据科学与大数据技术专业）</title>
+<style>
+  :root{
+    --bg:#f4f6fb; --card:#fff; --ink:#17233e; --muted:#5b6b83; --line:#e4e9f2;
+    --brand:#4f46e5; --brand-dark:#3730a3; --brand-soft:#eef0ff;
+    --blue:#0ea5e9; --green:#16a34a; --amber:#d97706; --red:#dc2626; --violet:#8b5cf6;
+    --radius:16px; --shadow:0 8px 30px rgba(30,41,59,.08);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth; scroll-padding-top:70px}
+  body{margin:0; font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",-apple-system,"Segoe UI",sans-serif;
+       background:var(--bg); color:var(--ink); line-height:1.78; font-size:16px; -webkit-text-size-adjust:100%}
+
+  .top{position:sticky; top:0; z-index:60; background:var(--brand); color:#fff; padding:12px 14px;
+       display:flex; align-items:center; gap:10px; box-shadow:0 2px 12px rgba(0,0,0,.15)}
+  .top .burger{width:42px;height:42px;border:none;border-radius:10px;background:rgba(255,255,255,.16);
+       color:#fff;font-size:22px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+  .top .tt{font-weight:800;font-size:15px;line-height:1.3}
+  .top .tt small{display:block;font-weight:400;font-size:11px;opacity:.9}
+
+  .overlay{position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:70;opacity:0;visibility:hidden;transition:.25s}
+  .overlay.show{opacity:1;visibility:visible}
+  .drawer{position:fixed;top:0;left:0;bottom:0;width:78%;max-width:320px;background:#fff;z-index:71;
+       transform:translateX(-100%);transition:.28s;overflow-y:auto;padding:16px 14px 40px;box-shadow:4px 0 20px rgba(0,0,0,.15)}
+  .drawer.show{transform:translateX(0)}
+  .drawer .dhead{display:flex;align-items:center;justify-content:space-between;padding:4px 4px 12px;border-bottom:1px solid var(--line);margin-bottom:8px}
+  .drawer .dhead b{font-size:16px;color:var(--brand-dark)}
+  .drawer .dhead button{width:34px;height:34px;border:none;background:var(--brand-soft);color:var(--brand);border-radius:8px;font-size:18px;cursor:pointer}
+  .drawer .group{font-size:12px;color:var(--muted);padding:10px 10px 2px;letter-spacing:.5px;font-weight:700}
+  .drawer a{display:block;color:var(--ink);text-decoration:none;font-size:15px;padding:11px 10px;border-radius:9px;margin:1px 0}
+  .drawer a:active{background:var(--brand-soft);color:var(--brand)}
+
+  .hero{background:linear-gradient(140deg,#3730a3,#4f46e5 55%,#7c6cf5);color:#fff;padding:26px 16px 26px;text-align:center;position:relative}
+  .hero .badge{display:inline-block;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);padding:3px 12px;border-radius:999px;font-size:12px;margin-bottom:12px}
+  .hero h1{font-size:23px;margin:0 0 10px;line-height:1.35;font-weight:800}
+  .hero p.sub{font-size:14.5px;margin:0 auto 16px;max-width:620px;opacity:.95}
+  .hero .motto{font-size:14.5px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);padding:8px 14px;border-radius:10px;font-weight:600;display:inline-block}
+
+  .wrap{padding:16px 12px 48px; max-width:900px; margin:0 auto}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 16px 24px;margin-bottom:18px}
+  .sec-tag{font-size:12px;width:fit-content;background:var(--brand);color:#fff;padding:4px 14px;border-radius:999px;margin:0 0 14px;font-weight:600;letter-spacing:.4px}
+  h3{font-size:19px;margin:0 0 12px;border-left:4px solid var(--brand);padding-left:11px;color:#151f36}
+  h4{font-size:16px;margin:16px 0 8px;color:var(--brand-dark)}
+  p{margin:8px 0 12px}
+  ul,ol{margin:8px 0 14px;padding-left:20px}
+  li{margin:6px 0}
+  .hl{color:var(--brand);font-weight:700}
+  .muted{color:var(--muted);font-size:14px}
+  .callout{background:var(--brand-soft);border-left:4px solid var(--brand);border-radius:8px;padding:12px 14px;margin:13px 0;color:#3730a3;font-size:15px}
+  .callout.warn{background:#fff7ed;border-left-color:var(--amber);color:#92400e}
+  .callout.good{background:#ecfdf5;border-left-color:var(--green);color:#065f46}
+  .callout.red{background:#fef2f2;border-left-color:var(--red);color:#991b1b}
+  .tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;font-weight:600;vertical-align:middle;margin-left:3px}
+  .tag.step{background:var(--brand);color:#fff}
+  .tag.key{background:#fef3c7;color:#b45309}
+
+  /* 步骤卡片 */
+  .step-card{border:1px solid var(--line);border-radius:13px;margin:12px 0;overflow:hidden;background:#fff}
+  .step-card .sc-h{display:flex;align-items:center;gap:10px;background:#f7f8fd;padding:11px 14px;border-bottom:1px solid var(--line)}
+  .step-card .num{width:28px;height:28px;border-radius:50%;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;flex:0 0 auto}
+  .step-card .sc-t{font-weight:800;font-size:15px}
+  .step-card .sc-b{padding:13px 15px}
+  .btn{display:inline-block;background:var(--brand);color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer}
+  code{background:#0f172a;color:#e2e8f0;padding:2px 7px;border-radius:5px;font-size:13px;font-family:"Consolas","Courier New",monospace}
+  pre{background:#0f172a;color:#e5e7eb;padding:12px 14px;border-radius:10px;overflow-x:auto;font-size:13px;line-height:1.6;font-family:"Consolas","Courier New",monospace}
+  pre code{background:none;padding:0}
+
+  /* 提醒/警示激励块 */
+  .warnbox{background:#fff7ed;border:1px solid #f59e0b;border-left:5px solid var(--amber);border-radius:12px;padding:14px 16px;color:#7c4a03}
+  .warnbox b{color:#92400e}
+  .motivbox{background:#ecfdf5;border:1px solid #34d399;border-left:5px solid var(--green);border-radius:12px;padding:14px 16px;color:#065f46}
+  .motivbox b{color:#166534}
+
+  /* 小维度卡片 */
+  .dim-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin:12px 0}
+  .dim{border:1px solid var(--line);border-radius:12px;padding:13px;background:#fff;border-top:3px solid var(--blue)}
+  .dim .t{font-weight:800;font-size:14px;margin-bottom:4px}
+  .dim .d{font-size:12.5px;color:var(--muted)}
+
+  .screenshot{width:100%;border:2px dashed #cbd5e1;border-radius:12px;padding:18px;text-align:center;color:#94a3b8;font-size:13px;margin:10px 0}
+  .screenshot b{color:var(--brand)}
+
+  footer{background:#17233e;color:#cbd5e1;text-align:center;padding:24px 16px;font-size:13.5px;margin-top:10px}
+  footer b{color:#fff}
+  #toTop{position:fixed;right:16px;bottom:16px;width:46px;height:46px;border-radius:50%;background:var(--brand);color:#fff;border:none;font-size:20px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.2);opacity:0;transition:.2s;z-index:50}
+  #toTop.show{opacity:1}
+
+  @media(min-width:720px){ .wrap{padding:22px 26px 56px} .dim-grid{grid-template-columns:repeat(4,1fr)} .card{padding:26px 26px 30px} }
+</style>
+</head>
+<body>
+
+<div class="top">
+  <button class="burger" id="burger" aria-label="目录">☰</button>
+  <div class="tt">大学生工作日志 · GitHub 一步步上手<small>（数据科学与大数据技术专业 · 新生零基础版）</small></div>
+</div>
+<div class="overlay" id="overlay"></div>
+<nav class="drawer" id="drawer" aria-label="目录">
+  <div class="dhead"><b>📑 目录</b><button id="close" aria-label="关闭">✕</button></div>
+  <div class="group">一、先搞清楚为什么</div>
+  <a href="#why">为什么要把日志放 GitHub</a>
+  <a href="#prof">专业背景</a>
+  <a href="#collect">数据采集与分析</a>
+  <a href="#solid">不可篡改性</a>
+  <a href="#github">GitHub 的地位与高星项目</a>
+  <a href="#inspo">有意思的开源项目</a>
+  <div class="group">二、动手做（零基础）</div>
+  <a href="#step1">第1步·注册 GitHub</a>
+  <a href="#step2">第2步·新建一个仓库</a>
+  <a href="#step3">第3步·写“工作日志”</a>
+  <a href="#step4">第4步·上传证明材料</a>
+  <a href="#step5">第5步·开小项目并写README</a>
+  <div class="group">三、叮嘱与鼓励</div>
+  <a href="#warn">警示：别不当回事</a>
+  <a href="#motiv">激励：这会成为你的亮点</a>
+  <a href="#tpl">附：日志模板</a>
+</nav>
+
+<section class="hero">
+  <span class="badge">2026级 数据科学与大数据技术专业 · 学生操作指南</span>
+  <h1>大学“工作日志”怎么记？<br>用 GitHub 一步步来</h1>
+  <p class="sub">你刚高中毕业，没接触过电脑也不用怕。这篇指南教你：注册一个账号、开一个“仓库”、把自己大学四年学的、干的都记进去。</p>
+  <div class="motto">电脑不难，难的是开始。今天跟着这篇文档走一遍，你就入门了。</div>
+</section>
+
+<div class="wrap">
+
+  <!-- ============ 一、为什么 ============ -->
+  <div class="sec-tag">第一部分　先搞清楚：为什么要做这件事</div>
+
+  <section class="card" id="why">
+    <h3>一句话：我们要用数据“管理”你的大学四年</h3>
+    <p>你是<b>数据科学与大数据技术专业</b>的学生。学这个专业，最重要的本领之一就是<b>“从数据里看出门道”</b>。</p>
+    <p>而你们这<b>60 多个同学</b>，四年的学习过程本身就是一笔巨大的数据。为了让这些数据真正有用，需要你<b>把每天的所学、所做，如实、连续地记下来</b>——这就是你的<b>“工作日志”</b>。</p>
+    <div class="callout good"><b>一句话概括</b>：把你大学四年“学了什么、干了什么”，都放到一个<b>专门的GitHub仓库</b>里，方便随时记录、也方便<b>老师用数据来分析</b>。这件事贯穿你的大学四年。</div>
+  </section>
+
+  <section class="card" id="prof">
+    <h3>专业背景</h3>
+    <p>我们专业是<b>数据科学与大数据技术</b>，核心是：<span class="hl">会写程序、会管数据、会让机器从数据里学出规律、能做出数据产品</span>。</p>
+    <p>所以“用数据看待问题”会伴随你四年。你的工作日志，就是第一次“用数据记录自己”。</p>
+  </section>
+
+  <section class="card" id="collect">
+    <h3>数据采集与分析：这份日志会用来做什么？</h3>
+    <p>到<b>大二、大三</b>，会有很多<b>课程实践</b>。届时老师会通过<b>数据采集技术</b>，把<b>全班 60 多人</b>的项目文件统一采集下来，作为<b>基础数据</b>做分析。比如：</p>
+    <div class="dim-grid">
+      <div class="dim"><div class="t">📈 学习与平时工作</div><div class="d">学习成绩 与 你平时记录的活跃度，有没有相关性？</div></div>
+      <div class="dim"><div class="t">🔧 动手能力与平时工作</div><div class="d">动手/项目产出 与 平时是否持续记录，有没有关系？</div></div>
+      <div class="dim"><div class="t">🙌 谁在努力</div><div class="d">从提交记录能看出：谁学习相对努力、谁一直坚持。</div></div>
+      <div class="dim"><div class="t">😴 谁没坚持</div><div class="d">提交很少、断断续续，也能一眼看出来。</div></div>
+    </div>
+    <div class="callout warn"><b>注意</b>：这些分析，靠的是你<b>真实、连续、可追踪</b>的提交记录。如果三天打鱼两天晒网，数据上是会“说话”的。</div>
+  </section>
+
+  <section class="card" id="solid">
+    <h3>不可篡改性：为什么一定要用 GitHub？</h3>
+    <p>你发的每一条记录，GitHub 都会记下<b>“谁、什么时间、提交了什么”</b>，并且生成一个<b>唯一编号（commit SHA）</b>。也就是说：</p>
+    <ul>
+      <li>每次提交都有<b>时间戳</b>，一旦写下就改动不了“那时的记录”；</li>
+      <li>即使试着删改，GitHub 的<b>提交历史</b>也会留下一串改动的痕迹；</li>
+      <li>所以这份日志<b>很客观、很难造假</b>——这正是它可信、有分析价值的原因。</li>
+    </ul>
+    <div class="callout"><b>记住</b>：你提交的文件和<b>时间戳是改不了的</b>。所以<b>及时、如实记录</b>最重要，别想着“以后补”或“以后改”。</div>
+  </section>
+
+  <section class="card" id="github">
+    <h3>GitHub 是什么？在我们这行有多重要？</h3>
+    <h4>背景</h4>
+    <p>GitHub 是<b>全球最大的代码托管与协作平台</b>，全世界几乎所有的程序员、开源项目、大公司都在上面"写代码、合作、分享"。它是<b>软件和数据行业的事实标准</b>——某种意义上，它是技术人的<b>作品展示馆</b>和名片。</p>
+    <h4>在我们行业的定位</h4>
+    <ul>
+      <li>数据科学 / 大数据领域的<b>前沿库、开源工具、项目源码</b>，大多公开在 GitHub 上；</li>
+      <li><b>各大公司、高校、科研小组</b>都在用；</li>
+      <li>会<b>看、会用、会做</b> GitHub 项目，是这行人的<b>基本素养</b>。</li>
+    </ul>
+    <h4>什么是"高星项目"？</h4>
+    <p>GitHub 上每个项目都能被用户<b>点星（Star）收藏</b>。<b>Star 数</b>代表<b>社区认可度和影响力</b>。一个<b>高星项目</b>，往往意味着它<b>被很多人使用、被认为做得好、真正有价值</b>。</p>
+    <h4>高星项目，对找工作 / 考研 / 复试都非常重要</h4>
+    <div class="dim-grid">
+      <div class="dim"><div class="t">💼 找工作</div><div class="d">简历上一个<b>真实、持续、高星</b>的项目，比空谈技能有说服力；很多<b>大厂、企业招聘非常看重 GitHub 项目和作品</b>，这是证明<b>动手能力</b>最硬的证据。</div></div>
+      <div class="dim"><div class="t">📖 考研</div><div class="d">初试看成绩；<b>复试</b>更看重你有没有<b>真实做过、能不能讲清</b>。一个高星项目会让你的复试<b>格外亮眼</b>。</div></div>
+      <div class="dim"><div class="t">🎤 复试 / 面试</div><div class="d">导师或面试官常问"你做过什么项目"。若你能<b>当场打开 GitHub 展示</b>，讲清<b>为什么做、怎么做、踩过什么坑</b>，比任何证书都打动人。</div></div>
+      <div class="dim"><div class="t">🌟 实践平台</div><div class="d">GitHub 不只是"交作业"，更是<b>最重要的实践平台</b>——把四年所学真正做成一个<b>能展示、有分量、被认可</b>的项目。</div></div>
+    </div>
+    <div class="motivbox" style="margin-top:14px">
+      <p style="margin:0"><b>特别希望你们能做出自己的"高星项目"。</b>这件事我会在班级里持续关注和鼓励。哪怕一开始很普通，只要<b>坚持做、认真改、持续更新</b>，它就有机会被更多人认可——这既是你能力的证明，也是你大学最好的作品。</p>
+    </div>
+  </section>
+
+  <section class="card" id="inspo">
+    <h3>看一看：GitHub 上那些有意思的开源项目（找找灵感）</h3>
+    <p class="muted">下面这些项目都<b>很受欢迎、星数很高</b>，值得你去逛一逛、学着做。<b>星数每天都在变，以 GitHub 当时显示的为准</b>；这里只讲"它是干嘛的、对你有啥用"。</p>
+    <div class="dim-grid">
+      <div class="dim"><div class="t">👀 HelloGitHub</div><div class="d">每月一期"有意思的开源项目"榜单，<b>中文</b>，专门帮你发现好玩的项目。<span class="hl">入门第一站，强烈推荐。</span></div></div>
+      <div class="dim"><div class="t">🎓 freeCodeCamp</div><div class="d">免费的编程学习平台，从零开始学编程。<span class="hl">零基础想系统学，从这里开始。</span></div></div>
+      <div class="dim"><div class="t">🧩 TheAlgorithms</div><div class="d">用多种语言整理的<b>算法集</b>，想学数据结构 / 算法时很好用。</div></div>
+      <div class="dim"><div class="t">🔌 public-apis</div><div class="d">一大堆<b>免费的公开数据接口（API）</b>，做数据小项目时随便取用，非常实用。</div></div>
+    </div>
+    <div class="dim-grid">
+      <div class="dim"><div class="t">📚 数据科学手册</div><div class="d">一本<b>免费的 Python 数据科学在线书</b>，系统好读。<span class="hl">我们专业推荐人手一册。</span></div></div>
+      <div class="dim"><div class="t">🐼 pandas</div><div class="d">Python 里处理<b>表格数据</b>最常用的库，以后天天用。</div></div>
+      <div class="dim"><div class="t">🤖 scikit-learn</div><div class="d">机器学习最常用的库，做预测、分类、聚类会用到。</div></div>
+      <div class="dim"><div class="t">🧠 Ollama</div><div class="d">能在<b>自己的电脑上跑大语言模型（AI 对话）</b>，特别贴合"AI 时代"。</div></div>
+    </div>
+    <div class="callout"><b>怎么逛一个项目？</b>打开项目 → 先看它的 <b>README</b>（就是"项目说明书"，讲它是干嘛的、怎么用）→ 点 <b>Star</b> 收藏 → 想看就点 <b>Fork</b> 复制到自己账号里练手 → 有兴趣还能把代码<b>下载到本地</b>自己跑一遍。<b>别贪多，挑你感兴趣、能上手的先玩起来。</b></div>
+    <div class="callout good"><b>提醒</b>：网上还有不少<b>中文的高星项目集</b>（如 GitHub-Chinese-Top-Charts 等），方便看到国人做的牛项目。<b>先去"逛"，再学着"做"——慢慢你也能成为它们的作者之一。</b></div>
+  </section>
+
+  <!-- ============ 二、动手做 ============ -->
+  <div class="sec-tag">第二部分　动手做（零基础，跟着走就行）</div>
+
+  <section class="card" id="step1">
+    <h3>第 1 步　注册一个 GitHub 账号</h3>
+    <div class="step-card">
+      <div class="sc-h"><span class="num">1</span><span class="sc-t">打开 GitHub 官网</span></div>
+      <div class="sc-b">打开浏览器，地址栏输入 <code>github.com</code>，回车。<span class="muted">（如果打不开，稍等或换浏览器再试。）</span></div>
+    </div>
+    <div class="step-card">
+      <div class="sc-h"><span class="num">2</span><span class="sc-t">点击右上角 “Sign up”</span></div>
+      <div class="sc-b">看到右上角 “Sign up”（注册）就点进去。</div>
+    </div>
+    <div class="step-card">
+      <div class="sc-h"><span class="num">3</span><span class="sc-t">填写注册信息</span></div>
+      <div class="sc-b">
+        依次填：<b>邮箱</b>（建议用你常用的邮箱，方便收验证码）、<b>密码</b>（设一个自己记得住的）、<b>用户名</b>。
+        <div class="callout"><b>用户名建议</b>：用“<b>拼音 + 学号</b>”，比如 <code>zhangsan202611029001</code>，既好记，老师也能一眼认出是你。用户名请<b>用英文/数字</b>，别用中文。</div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="sc-h"><span class="num">4</span><span class="sc-t">验证并创建账号</span></div>
+      <div class="sc-b">
+        按提示做“人机验证”（可能让你点图片找相似图标），点 <b>Create account</b>。
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="sc-h"><span class="num">5</span><span class="sc-t">去邮箱点验证链接</span></div>
+      <div class="sc-b">
+        到你的邮箱里找到 GitHub 发的邮件，点里面的“验证链接”。验证完成后账号就注册好了。
+      </div>
+    </div>
+    <div class="callout good"><b>完成</b>：现在你有了一个 GitHub 账号。记下它的<b>用户名</b>和密码，后面要常用。</div>
+  </section>
+
+  <section class="card" id="step2">
+    <h3>第 2 步　新建一个“仓库”（repository）</h3>
+    <div class="step-card">
+      <div class="sc-h"><span class="num">1</span><span class="sc-t">点右上角 “＋” → “New repository”</span></div>
+      <div class="sc-b">登录后，右上角有个“＋”，点它，选 <b>New repository</b>（新建仓库）。</div>
+    </div>
+    <div class="step-card">
+      <div class="sc-h"><span class="num">2</span><span class="sc-t">给仓库取名，填说明</span></div>
+      <div class="sc-b">
+        <b>Repository name</b>（仓库名）：建议 <code>log-202611029001</code> 或 <code>worklog-学号</code>，一句话说清是“谁的工作日志”。<br>
+        <b>Description</b>：可填“我的大学工作日志”。
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="sc-h"><span class="num">3</span><span class="sc-t">选择公开 / 私有</span></div>
+      <div class="sc-b">
+        <b>Public（公开）</b>：谁都能看到——推荐，方便老师采集与分析。<br>
+        <b>Private（私有）</b>：只有你自己能看到——若担心隐私可选。<div class="callout warn">为了能采集全班数据做分析，建议用 <b>Public</b>；如果你选 Private，后面需要时再告知老师授权即可。请按班级统一要求来。</div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="sc-h"><span class="num">4</span><span class="sc-t">勾选“Add a README file”，创建</span></div>
+      <div class="sc-b">
+        勾选 <b>Add a README file</b>（会生成一个说明文件，正好用来写日志），然后点 <b>Create repository</b>。<div class="callout good">这样仓库就建好了，而且天生带一个 <code>README.md</code>，用来写你的第一篇日志。</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" id="step3">
+    <h3>第 3 步　在仓库里写“工作日志”</h3>
+    <div class="step-card">
+      <div class="sc-h"><span class="num">1</span><span class="sc-t">点开 README.md，点击铅笔图标编辑</span></div>
+      <div class="sc-b">进入仓库后，点那个 <code>README.md</code> 文件，右上角有个<b>铅笔图标</b>，点它就能编辑。</div>
+    </div>
+    <div class="step-card">
+      <div class="sc-h"><span class="num">2</span><span class="sc-t">按模板写你的一周</span></div>
+      <div class="sc-b">用简单的文字记：<b>这一周学了什么、做了什么、遇到什么问题、下周打算</b>。可以每周加一条。</div>
+    </div>
+    <div class="step-card">
+      <div class="sc-h"><span class="num">3</span><span class="sc-t">提交（Commit changes）</span></div>
+      <div class="sc-b">写完后：<b>Commit changes</b> → 填一句说明（如“第1周日志”）→ 再点 <b>Commit changes</b> 保存。这就算“提交了一条”，GitHub 会记下时间和你的名字。</div>
+    </div>
+    <div class="callout good"><b>建议节奏</b>：<b>每周写一次</b>，坚持四年。哪怕只写三五行也好，关键是<b>真实、连续</b>。</div>
+    <div class="callout warn"><b>记</b>：这一条记录一旦提交，<b>时间戳就固定下来了</b>——现在写的才是“本周”，以后补的就不是这个时间了。</div>
+  </section>
+
+  <section class="card" id="step4">
+    <h3>第 4 步　上传你的“证明材料文件”</h3>
+    <div class="step-card">
+      <div class="sc-h"><span class="num">1</span><span class="sc-t">点 “Add file” → “Upload files”</span></div>
+      <div class="sc-b">在仓库页面点 <b>Add file</b>，选 <b>Upload files</b>（上传文件）。</div>
+    </div>
+    <div class="step-card">
+      <div class="sc-h"><span class="num">2</span><span class="sc-t">把文件拖进来或选择上传</span></div>
+      <div class="sc-b">把本地的<b>作业、作品、实验报告、截图、证书、项目文件</b>等，直接拖进页面；或点“choose your files”选择。推荐按月份/课程建个文件夹，例如 <code>2026-09</code>、<code>数据结构/</code>。</div>
+    </div>
+    <div class="step-card">
+      <div class="sc-h"><span class="num">3</span><span class="sc-t">填说明并提交</span></div>
+      <div class="sc-b">在下方填一句说明（如“提交第2周程序设计实验”），点 <b>Commit changes</b>。你的材料就进仓库了，<b>同样带上了时间戳</b>。</div>
+    </div>
+    <div class="callout"><b>建议</b>：把<b>课程作业、项目、竞赛作品、获奖证书、重要截图</b>都往仓库里放。这些就是你四年的“作品库”，也是将来数据分析的重要素材。</div>
+  </section>
+
+  <section class="card" id="step5">
+    <h3>第 5 步　开一个自己的小项目，并写好项目说明（README）</h3>
+    <p class="muted">前面 1–4 步让你"会提交"；这一步教你<b>做出一个自己的作品</b>——也就是那个"将来可能有被点赞、能写进简历/复试"的小项目。</p>
+
+    <div class="step-card">
+      <div class="sc-h"><span class="num">1</span><span class="sc-t">挑一个"点子"（别贪大）</span></div>
+      <div class="sc-b">
+        从"一件小事"开始，挑你感兴趣、又稍微有点挑战的。结合咱们专业，几个方向给你参考：
+        <ul style="margin:6px 0 0">
+          <li><b>📊 数据小项目</b>：用公开数据接口或网上数据，做一个简单的<b>数据可视化</b>（比如把某方面数据画成图表）。</li>
+          <li><b>🛠 小工具</b>：做一个帮自己解决学习/生活小问题的东西（计算器、记笔记、爬个资料等）。</li>
+          <li><b>🐍 小程序</b>：把课上学的代码做成一个能跑起来的小程序。</li>
+        </ul>
+        <div class="callout"><b>一句话</b>：宁可小，也要<b>真</b>——做出一个<b>能跑、能讲清楚</b>的小东西。</div>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="sc-h"><span class="num">2</span><span class="sc-t">为这个项目新建一个仓库</span></div>
+      <div class="sc-b">
+        用"第 2 步"的方法，新建一个仓库（如 <code>my-first-project</code>、<code>data-viz-xxx</code>），记得勾选 <b>"Add a README file"</b>。
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="sc-h"><span class="num">3</span><span class="sc-t">把代码 / 内容放进去，结构清楚</span></div>
+      <div class="sc-b">
+        用"第 4 步"的 <b>Upload files</b> 上传代码、数据、文件。建议<b>文件夹分清楚</b>：代码、数据、说明分开放。
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="sc-h"><span class="num">4</span><span class="sc-t">写好"项目说明 README"（重点！）</span></div>
+      <div class="sc-b">
+        README 就是项目的<b>门面</b>和<b>说明书</b>，别人第一眼看的就是它。写清楚，项目才有人看、有人用、有人点赞。直接用下面这个模板：
+        <pre><code># 项目名（一句话说清它是干嘛的）
+
+## 🎯 这个项目做什么
+用两句话说清：解决了什么问题 / 有什么价值。
+
+## 🛠 怎么运行（让别人也能跑起来）
+1. 需要装什么（如 Python 3、某个库）
+2. 怎么运行（如 `python main.py`）
+
+## 🧾 功能 / 特点
+- 功能一
+- 功能二
+
+## 📸 效果截图
+（放一两张运行截图，最有说服力）
+
+## ⏭ 下一步 / 想做的
+- 还能加点什么、已知的问题
+
+## 👤 作者
+你的名字 + 学号 + 联系方式</code></pre>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="sc-h"><span class="num">5</span><span class="sc-t">提交、持续更新</span></div>
+      <div class="sc-b">
+        做一点就提交一次；不断补功能、修问题。让 <b>README 和代码一起更新</b>，别让说明书跟代码对不上。
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="sc-h"><span class="num">6</span><span class="sc-t">怎样更可能"涨星"？</span></div>
+      <div class="sc-b">
+        <ul style="margin:0">
+          <li>✅ <b>做出来、能跑</b>：别只放个空壳或一堆没说明的代码。</li>
+          <li>✅ <b>README 清楚友好</b>：把"怎么用、做了什么"写明白。</li>
+          <li>✅ <b>配图 / 截图 / 演示</b>：让人一眼看懂效果。</li>
+          <li>✅ <b>持续维护、认真打磨</b>：好项目是做出来的，不是一蹴而就。</li>
+          <li>✅ <b>多交流、多借鉴</b>：看看高星项目的 README 是怎么写的。</li>
+        </ul>
+        <div class="callout">关于"星"：<b>别盯着数字着急</b>。把项目<b>做真实、做有用、写清楚</b>，星是水到渠成的事。</div>
+      </div>
+    </div>
+
+    <div class="motivbox" style="margin-top:6px">
+      <p style="margin:0"><b>一个能跑、说明清楚的小项目，就是你大学最好的作品之一。</b>坚持做、认真改，它就有机会被更多人看到和点赞——这也是你将来在<b>简历和复试</b>上最拿得出手的东西。</p>
+    </div>
+  </section>
+
+  <!-- ============ 三、叮嘱与鼓励 ============ -->
+  <div class="sec-tag">第三部分　叮嘱与鼓励（请认真看）</div>
+
+  <section class="card" id="warn">
+    <h3>⚠️ 警示：这件事，请认真对待</h3>
+    <div class="warnbox">
+      <p style="margin:0 0 6px">老师会<b>用数据来分析全班的情况</b>。到那时：</p>
+      <ul style="margin:0 0 6px;padding-left:20px">
+        <li>如果平时<b>认认真真记录、提交</b>，数据会证明你在努力；</li>
+        <li>如果<b>经常不提交、断断续续、材料全无</b>，在分析里自然就“排在后面”。</li>
+      </ul>
+      <p style="margin:0"><b>如果不想以后被反复拿来分析时总排在末尾、也不想丢人</b>，那就从一开始认真做好这件事。这不是吓唬你，而是让数据替你说话——早点开始，你会很体面。</p>
+    </div>
+  </section>
+
+  <section class="card" id="motiv">
+    <h3>🌟 激励：这会成为你大学四年的“亮点”</h3>
+    <div class="motivbox">
+      <p style="margin:0 0 8px">通过这种方式，老师能实现对你<b>大学期间的全流程管理</b>。更重要的是，它也会回馈给你：</p>
+      <ul style="margin:0 0 8px;padding-left:20px">
+        <li><b>一份你自己的成长记录</b>：四年学过的课、做过的项目、跨过的坑，全都在这里。</li>
+        <li><b>一份由数据分析生成的学习报告</b>：到毕业时，用数据分析方法帮你生成一份<b>大学期间学习报告</b>——这是一份<b>非常亮眼的成绩</b>，远比一张成绩单有意义。</li>
+        <li><b>对你青春的记录</b>：很多年后回看，你会感谢现在坚持记录的自己。</li>
+      </ul>
+      <p style="margin:0"><b>你认真的每一天，都在为这份“报告”攒数据。把它当成给四年后的自己，写一封长长的信。</b></p>
+    </div>
+  </section>
+
+  <section class="card" id="tpl">
+    <h3>附：工作日志模板（可直接用）</h3>
+    <p class="muted">把下面这段复制到你的 <code>README.md</code>，每周加一条。</p>
+    <pre><code># 我的大学工作日志 · 张三（202611029001）
+
+## 2026年09月 第1周
+- 这周学了：GitHub 怎么用、高等数学第一章、程序设计基础的入门。
+- 这周做了：注册了 GitHub、建了自己的第一个仓库。
+- 遇到的问题：第一次上传文件有点晕，跟着指南走了一遍就会了。
+- 下周打算：把程序设计基础的作业补充进仓库。
+
+## 2026年09月 第2周
+- 这周学了：……
+- 这周做了：……
+- 遇到的问题：……
+- 下周打算：……</code></pre>
+    <div class="callout good"><b>小提示</b>：用 Markdown 写日志很轻松（<code>#</code> 是标题、<code>-</code> 是列表）。不会也没关系，写成一堆文字也完全没问题，<b>关键是坚持记、如实记</b>。</div>
+  </section>
+
+</div>
+
+<footer>
+  <p style="margin:0 0 8px"><b>数据科学与大数据技术专业 · 学生工作日志操作指南</b></p>
+  <p style="margin:0 0 8px">有问题随时问班主任或助教。如果你不会，不用怕——按这篇文档走一遍，就入门了。</p>
+  <p style="margin:0;font-size:12.5px;opacity:.8">编制：计算机与控制工程学院 · 数据科学与大数据技术专业 · 班主任 赵鑫</p>
+</footer>
+
+<button id="toTop" aria-label="回到顶部">↑</button>
+
+<script>
+  var burger=document.getElementById('burger'), drawer=document.getElementById('drawer'), overlay=document.getElementById('overlay'), close=document.getElementById('close'), toTop=document.getElementById('toTop');
+  function openNav(){drawer.classList.add('show'); overlay.classList.add('show'); document.body.style.overflow='hidden';}
+  function closeNav(){drawer.classList.remove('show'); overlay.classList.remove('show'); document.body.style.overflow='';}
+  burger.addEventListener('click',openNav);
+  close.addEventListener('click',closeNav);
+  overlay.addEventListener('click',closeNav);
+  drawer.querySelectorAll('a').forEach(function(a){a.addEventListener('click',closeNav);});
+  window.addEventListener('scroll',function(){toTop.classList.toggle('show',window.scrollY>300);});
+  toTop.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+</script>
+</body>
+</html>
