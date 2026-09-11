@@ -5,4 +5,4 @@ Mein Uni-Arbeitstagebuch（赵振宇
 
 9.6下午，构思了一份屏幕翻译的基本想法，感觉这里像写日记的地方
 
-屏翻具体日志看具体项目，链接指引
+屏翻具体日志看具体项目，链接指引   https://github.com/ANTON9527/AI-screen-translate
